@@ -1,0 +1,88 @@
+\documentclass[11pt,twocolumn]{article}
+
+\begin{document}
+
+\section{Cliq Design}
+
+The Cliq design enforces the following goals: 
+
+\begin{itemize}
+\item Show content that is relevent to user interests
+\item Show content that is popular
+\item Prevent spamming (such that it would violate either i or ii)
+\item Enforce basic protections of user anonymity
+\end{itemize}
+
+The cliq interface is based upon the following primitives: get, vote, upload, and replicate. 
+These primitives enforce the goals above allowing cliq users to view content with the same ease of use of a centralized system with protections additional protections available through a decentralized system. 
+
+\subsection{Connecting to cliq}
+
+Connecting to cliq, because of its P2P design, simply requires connecting to a single peer that is already part of cliq. 
+After joining the network, a node will learn about other nodes and cliq content by both making and responding to peer requests. 
+These features of cliq are an extension of the Kademlia architecture.
+
+\subsection{Storing content in cliq}
+\label{subsec:upload}
+
+Each node in cliq has a Node ID which is a unique hash used to identify that particular node. 
+Content in cliq is stored by tag on nodes with Node ID closest to Tag ID specified by prefix matching where the Tag ID is simply a hash of that particular tag's name. 
+This scheme is used to both facilitate request routing as well as distribute load through the network. 
+Content is initially stored in cliq with a call to the upload primitive, specifying the tag to be associated with the content, a title to show with the content, and the content url. 
+This information is then stored at the node with Node ID closest to the Tag ID by prefix. 
+If the tag already exists, the new item is merged in with the existing tag and its popularity is increased as specified in \ref{subsec:popularity}. 
+Otherwise, the new tag is created containing the new item. 
+Since posts can be associated with multiple tags, a single upload may cause multiple stores on different nodes in the cliq. 
+This makes posts easily retrievable by tag name as well as distributing load by tag throughout the network. 
+
+\subsection{Viewing cliq content}
+
+The primitive for viewing content is a get. 
+A get specifies a tag name and returns popular content associated with that tag. 
+The request will be routed through the cliq network based on the Tag ID. 
+A Node ID with prefix close to that Tag ID will return posts associated with that tag, if the tag exists. 
+The posts that are returned will be a subset of the most popular posts associated with that tag. 
+Unless a tag is only controlled by a single node, each node storing content for a particular tag is not necessarily aware of all posts associated with that tag. 
+The number of nodes storing each tag is explained in \ref{subsec:replication}. 
+
+\subsection{Determining Popularity}
+\label{subsec:popularity}
+
+Popularity is determined by three factors: uploads, up votes, and down votes. 
+The formula for determining popularity based on these factors is <FORMULA (min(uploads, 10) + ups - downs)>.
+An upload, as discussed in \ref{subsec:uplaod}, will either create a new post or will add to the value of an existing post's popularity. 
+The vote primitive requries a tag name, content url, and Node ID on which the vote is made. 
+Note that a tag name and content url identify a unique post, as this speicifies the criteria for whether or not a new post is created on an upload. 
+A voting node will necessarily know of a Node ID to vote on, as in order to find the post it must of have performed a get. 
+A high enough popularity for a post on a particular node will trigger a replication, specified in \ref{subsec:replication}. 
+
+\subsection{Replicating content}
+\label{subsec:replication}
+
+Tags containing popular content are replicated on multiple nodes close to the Tag ID. 
+This helps to distribute the load of gets and votes to a larger subset of nodes such that a single node in the cliq does not have to handle all requests. 
+Additionally, this replication allows for popular content to stay in the network in the case of nodes disconnecting. 
+Replication occurs after the popularity of a post in a particular tag exceeds the replication tolerance, a constant that determines the number of votes needed to replicate. 
+To prevent malicious nodes from replicating arbitrarily on other nodes in the network, a node must send a replication warning to a node it intends to replicate on. 
+After receiving a replication warning, a node waits to see votes from a fraction of nodes before accepting the replication request. 
+These votes must be redirected from the node wishing to replicate to the node that received the replication warning. 
+This verifies that the tag is indeed popular and deserves to be replicated further throughout the cliq network. 
+This fraction of the replication tolerance needed to be seen by the node being replicated on is specified as <???>. 
+The tag is replicated with each post restarting in popularity, with the assumption that popular posts will continue to be popular. 
+More discussion of these security measures is in \ref{subsec:spam}. 
+
+\subsection{Spamming Prevention}
+\label{subsec:spam}
+
+Several features were added to cliq specifically to avoid a single user or small group of users from controlling the content available in the cliq network.
+First, a single or small subset of nodes should not be able to cause certain posts to become more (or less) popular than a post that is more widely upvoted.
+As such, votes on a particular post within a tag are restricted to one per IP address by the nodes that control them. 
+Therefore, it takes a majority of different nodes within the network to cause a post to become popular. 
+We do not believe tracking of IP addresses that have voted on a particular post is harmful to the protection of user privacy. 
+Nodes controlling a tag will only see a subset of votes if that tag has been replicated. 
+In addition, these types of protections are offered by other services that can be used along with cliq, such as Tor. 
+As well, when a tag is replicated the popularity of its posts reset as if the posts were recently uploaded. 
+Therefore, even if a small subset of nodes are able to cause a tag to replicate, the maximum popularity it will see is the number of nodes that have voted on it. 
+This successfully prevents a small subset of nodes from having a disproportionate impact on the content seen by other cliq users. 
+
+\end{document}
