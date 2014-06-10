@@ -1,7 +1,36 @@
-\documentclass[11pt,twocolumn]{article}
-
+\documentclass{sig-alternate}
 \begin{document}
+\nocite{*}
 
+\conferenceinfo{DSCE}{'14 Evanston, Illinois USA}
+
+\title{Cliq: Something Something}
+% \subtitle{EECS 395/495: Distributed Systems in Challenging Environments}
+
+\numberofauthors{3}
+
+\author{
+\alignauthor Angela Jiang\\
+  \affaddr{Northwestern University}\\
+  \email{\small angelajiang2014@u.northwestern.edu}
+\alignauthor Andrew Kahn\\
+  \affaddr{Northwestern University}\\
+  \email{\small andrewkahn2015@u.northwestern.edu}
+\and
+\alignauthor Max New\\
+  \affaddr{Northwestern University}\\
+  \email{\small maxnew2014@u.northwestern.edu}
+}
+
+\date{9 June 2014}
+
+\maketitle
+\begin{abstract}
+  TODO
+\end{abstract}
+\begin{section}{Introduction}
+  TODO
+\end{section}
 \section{Cliq Design}
 
 The Cliq design enforces the following goals: 
@@ -50,7 +79,7 @@ The number of nodes storing each tag is explained in \ref{subsec:replication}.
 
 Popularity is determined by three factors: uploads, up votes, and down votes. 
 The formula for determining popularity based on these factors is <FORMULA (min(uploads, 10) + ups - downs)>.
-An upload, as discussed in \ref{subsec:uplaod}, will either create a new post or will add to the value of an existing post's popularity. 
+An upload, as discussed in \ref{subsec:upload}, will either create a new post or will add to the value of an existing post's popularity. 
 The vote primitive requries a tag name, content url, and Node ID on which the vote is made. 
 Note that a tag name and content url identify a unique post, as this speicifies the criteria for whether or not a new post is created on an upload. 
 A voting node will necessarily know of a Node ID to vote on, as in order to find the post it must of have performed a get. 
@@ -84,5 +113,12 @@ In addition, these types of protections are offered by other services that can b
 As well, when a tag is replicated the popularity of its posts reset as if the posts were recently uploaded. 
 Therefore, even if a small subset of nodes are able to cause a tag to replicate, the maximum popularity it will see is the number of nodes that have voted on it. 
 This successfully prevents a small subset of nodes from having a disproportionate impact on the content seen by other cliq users. 
+
+\begin{section}{Conclusion}
+  TODO
+\end{section}
+
+\bibliographystyle{abbrv}
+\bibliography{cliq}
 
 \end{document}
