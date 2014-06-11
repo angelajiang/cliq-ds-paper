@@ -34,15 +34,33 @@
 
 \section{Cliq Design}
 
-Cliq stores content using a DHT. 
-Cliq is built on Kademlia. 
-Cliq aggregates content based on popularity. 
-Cliq stores urls that users may be interested in. 
-People's votes determine which content people see. 
+\subsection{Content in Cliq}
+
+Cliq is a content curator. 
+The most basic content available in Cliq is a url, which is then associated within Cliq with several factors that determine its popularity such as votes and views inside a post. 
+Posts are sorted by tags, where a single post can be associated with multiple tags. 
+When a user aims to retrieve content from Cliq, this is done at the level of a tag. 
+A tag in Cliq is analagous to a subreddit in Reddit, where posts are similar as well. 
+However, a Reddit post is only associated with a single post whereas a Cliq post may be associated with multiple tags. 
+As well, a Cliq post likely stores different metadata than a Reddit post, though this is speculative. 
+The metadata of a Cliq post is explained in more detail in \ref{subsec:upload}. 
+
+\subsection{Cliq metatags}
+
+In addition to standard content tags, Cliq provides metatags which provide several useful services for Cliq users. 
+These metatags are prefixed with an underscore such as \_blacklist and \_tags. 
+Metatags are voted on identically to regular tags and can contain information such as bad nodes through the \_blacklist tag and the most interesting Cliq tags through \_tags. 
+These metatags can be extremely useful; for example, the most popular blacklisted IP addresses are those which you would most want to avoid communicating with. 
+
+\subsection{Cliq DHT}
+
+Cliq stores content using a Distributed Hash Table and is built on top of Kademlia. 
+This was the most logical choice for building a peer-to-peer architecture for storing and retrieving data. 
+This ensured a simple, per node get and put interface on top of which Cliq's features are implemented. 
 
 \section{Cliq Implementation}
 
-The Cliq design enforces the following goals: 
+The Cliq implementation enforces the following design goals: 
 
 \begin{itemize}
 \item Show content that is relevent to user interests
@@ -57,6 +75,7 @@ These primitives enforce the goals above allowing cliq users to view content wit
 \subsection{Connecting to cliq}
 
 Connecting to cliq, because of its P2P design, simply requires connecting to a single peer that is already part of cliq. 
+In order to connect, a node simply needs to generate a Node ID which is a random 160 bit hash. 
 After joining the network, a node will learn about other nodes and cliq content by both making and responding to peer requests. 
 These features of cliq are an extension of the Kademlia architecture.
 
@@ -72,6 +91,8 @@ If the tag already exists, the new item is merged in with the existing tag and i
 Otherwise, the new tag is created containing the new item. 
 Since posts can be associated with multiple tags, a single upload may cause multiple stores on different nodes in the cliq. 
 This makes posts easily retrievable by tag name as well as distributing load by tag throughout the network. 
+As the post is seen and voted on, additional metadata is stored in the post such as the IP addresses of nodes that have voted on it as well as the IP addresses of nodes that have received that post in a get. 
+The reasons for this metadata should become clear from \ref{sec:spam}. 
 
 \subsection{Viewing cliq content}
 
@@ -87,7 +108,7 @@ The number of nodes storing each tag is explained in \ref{subsec:replication}.
 \label{subsec:popularity}
 
 Popularity is determined by three factors: uploads, up votes, and down votes. 
-The formula for determining popularity based on these factors is <FORMULA (min(uploads, 10) + ups - downs)>.
+The formula for determining popularity based on these factors was based on calculations of Reddit data and is explained in \ref{redditshit}.
 An upload, as discussed in \ref{subsec:upload}, will either create a new post or will add to the value of an existing post's popularity. 
 The vote primitive requries a tag name, content url, and Node ID on which the vote is made. 
 Note that a tag name and content url identify a unique post, as this speicifies the criteria for whether or not a new post is created on an upload. 
@@ -105,14 +126,65 @@ To prevent malicious nodes from replicating arbitrarily on other nodes in the ne
 After receiving a replication warning, a node waits to see votes from a fraction of nodes before accepting the replication request. 
 These votes must be redirected from the node wishing to replicate to the node that received the replication warning. 
 This verifies that the tag is indeed popular and deserves to be replicated further throughout the cliq network. 
-This fraction of the replication tolerance needed to be seen by the node being replicated on is specified as <???>. 
+This fraction of the replication tolerance needed to be seen by the node being replicated on is specified by analysis of Reddit and is explained in \ref{subsec:redditshit}. 
 The tag is replicated with each post restarting in popularity, with the assumption that popular posts will continue to be popular. 
-More discussion of these security measures is in \ref{subsec:spam}. 
+More discussion of these security measures is in \ref{sec:spam}. 
 
-\subsection{Spamming Prevention}
-\label{subsec:spam}
+\section{Spamming Prevention}
+\label{sec:spam}
 
 Several features were added to cliq specifically to avoid a single user or small group of users from controlling the content available in the cliq network.
+These challenges are specific to Cliq because of the design goal of both privacy, anonymity, and decentralization. 
+For example, as in Reddit, we cannot do banning per user because Cliq has no concept of users. 
+Instead, Cliq enforces the principles of popularity on the level of individual gets, votes, and stores such that popular content and the content shown in Cliq is that which is voted on most by the majority of users. 
+Because the case when a majority of users collude to make items seen by the network is the intended use of Cliq, we look only at the cases of minorities without loss of generality. 
+
+\subsection{In the case of a single malicious node.}
+\label{subsec:spamsingle}
+
+Because there is no concept of user accounts in Cliq, an obvious attack vector is a single node that attempts to make a post popular by voting an arbitrary number of times. 
+Cliq prevents this by storing the IP address of each node that votes on a particular post and then preventing a node from that IP address from voting again. 
+While in general Cliq attempts to store as little data relating users to data, we belive user privacy is perserved for two reasons.
+First, any particular node only sees a subset of the votes on a particular post if that post has been replicated and in general can see a small subset of votes in the network. 
+And second, we believe protections for IP addresses such as Tor and Psuedonyms can be suitable in addition to using Cliq. 
+As well, Cliq prevents lowering popularity arbitrarily through multiple views by keeping a similar list of IP addresses of nodes that receive posts in a get request. 
+Another simple attack vector in Cliq is respnding to a get request in Cliq with an arbitrary response. 
+While a completely distributed model cannot protect entirely against this type of attack, replication of data protects somewhat against this type of attack. 
+Only a subset of nodes will get posts for a particular tag from any one node. 
+As well, the distribution of which tags are meant to be stored on which node is according to Node ID, which ensures equal chance for each node to be in charge of each tag because Node IDs are assigned randomly. 
+If user experience is impacted by any particular node falsely responding to requests, it is simple to blacklist IPs or Node IDs in Cliq such that they will not be asked for data. 
+Another attack vector, the simplest way to make content appear popular in the network is by attempting to replicate it arbitrarily. 
+Cliq protects against this by requiring during replication that the node attempting to replicate redirect a certain number of up votes to the nodes it wishes to replicate on. 
+This number is explained with the analysis of Reddit data in \ref{subsec:redditshit}. 
+
+\subsection{In the case of a subset of malicious nodes (Sybil Attack).}
+\label{subsec:spammulti}
+
+As with a single node, with no concept of users Cliq must determine popularity such that a small subset of users cannot have votes more impactful than a large number of users. 
+The simplest attack vector is simply having a subset of colluding nodes all vote on a post. 
+While this will impact the popularity, as it should, it will not do so irrecoverably since popularity is determined as a ratio of up votes and views. 
+The inverse case is lowering popularity through multiple views and down votes on a post and is simiilarly handled. 
+Since uploads also impact the popularity of a post, this is another attack vector for determining popularity. 
+However, Cliq caps the impact of popularity early, with only the first 10 uploads having any impact. 
+This should have no legitimite user impact as a node actually attempting to upload content expects that it does not yet exist in Cliq. 
+If it has already received 10 uploads, clearly it exists in the network and does not receive an additional popularity boost. 
+As discussed in \ref{subsec:spamsingle}, an attack vector exists in replication and a node should not be able to replicate data arbitrarily in the Cliq network. 
+Popularity is not perserved during replication. 
+If it were, the number of nodes needed to cause a replication would be able to control popularity in the Cliq network. 
+This is because a node can choose to replicate on any node in the network with a sufficient number of votes, and can set the popularity arbitrarily high. 
+We do not believe that resetting the popularity upon replication negatively impacts the usability of the system as a replicated post will be seen as a new post and therefore will be high ranked initially. 
+If the node was popular on the original node, it should continue to be popular on the node it was replicated on since preferences in the Cliq network are assumed to be uniformly distributed through random selection of Node IDs. 
+Because popularity is determined exclusively by uploads, votes, views, and upload time, we believe these protections are sufficient. 
+
+\begin{section}{Conclusion}
+  TODO
+\end{section}
+
+\bibliographystyle{abbrv}
+\bibliography{cliq}
+
+\end{document}
+
 First, a single or small subset of nodes should not be able to cause certain posts to become more (or less) popular than a post that is more widely upvoted.
 As such, votes on a particular post within a tag are restricted to one per IP address by the nodes that control them. 
 Therefore, it takes a majority of different nodes within the network to cause a post to become popular. 
@@ -123,11 +195,3 @@ As well, when a tag is replicated the popularity of its posts reset as if the po
 Therefore, even if a small subset of nodes are able to cause a tag to replicate, the maximum popularity it will see is the number of nodes that have voted on it. 
 This successfully prevents a small subset of nodes from having a disproportionate impact on the content seen by other cliq users. 
 
-\begin{section}{Conclusion}
-  TODO
-\end{section}
-
-\bibliographystyle{abbrv}
-\bibliography{cliq}
-
-\end{document}
