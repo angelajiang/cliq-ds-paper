@@ -5,7 +5,7 @@
 
 \conferenceinfo{DSCE}{'14 Evanston, Illinois USA}
 
-\title{Cliq DSCE}
+\title{cliq: A Decentralized Social News Curator}
 % \subtitle{EECS 395/495: Distributed Systems in Challenging Environments}
 
 \numberofauthors{3}
@@ -23,48 +23,50 @@
   \email{\small maxnew2014@u.northwestern.edu}
 }
 
-\date{9 June 2014}
+\date{14 June 2014}
 
 \maketitle
 \begin{abstract}
 A social news site presents user-curated content, ranked by popularity. Popular 
-curators like Reddit, or Facebook have become effective way of crowdsourcing 
-news or sharing personal opinions. Traditionally, these services require a 
+curators like Reddit or Facebook have become effective ways of crowdsourcing 
+news or sharing personal opinions \cite{Weninger:reddit}. Traditionally, these services require a 
 centralized authority to aggregate data and determine what to display. However, 
 the trust issues that arise from a centralized system are particularly damaging to 
-the "Web democracy" that social news sites are meant to provide. 
+the ``Web democracy'' that social news sites are meant to provide. 
 
 In this poster, we present {\bf cliq}, a decentralized social news curator. cliq is a P2P based 
 social news curator that provides private and unbiased reporting. All users in cliq share 
 responsibility for tracking and providing popular content. Any user data that cliq needs 
-to store is also managed across the network. We first inform our design of cliq through 
+to store is also managed across the network. We inform our design of cliq through 
 an analysis of Reddit. We design a way to provide content curation without a persistent 
 moderator, or usernames.
 \end{abstract}
 
 \begin{section}{Introduction}
-Unlike other media, content shown on social media sites is determined by a "Web democracy", 
+Unlike other media, content shown on social media sites is determined by a ``Web democracy'', 
 open to anyone. However, the trust issues that arise from a centralized system are particularly 
 damaging to this goal. Users must accept that owners of these sites have the power to present 
 content aligned with their own agenda. For example, BBC news recently reported that moderators 
-of the subreddit "technology" were censoring posts that included banned words such as "bitcoin" 
-or "net neutrality"\footnote{\url{http://www.bbc.com/news/technology-27100773}}.
+of the subreddit ``technology'' were censoring posts that included banned words such as ``bitcoin'' 
+or ``net neutrality''\footnote{\url{http://www.bbc.com/news/technology-27100773}}.
 
 Further, centralized management of user data leads to concerns of personal information being 
 sold or intruded upon. In recent years, citizens have learned of government programs in multiple 
 countries that crawl the web and archive information off of such websites. In fact, there exist 
 multiple public services that given a username, scrape reddit and analyze the user's behavior; even 
-showing the topics most participated in and "Fun Guessed Data" such as if the user supports
+showing the topics most participated in and ``Fun Guessed Data'' such as if the user supports
 Occupy Wall Street\footnote{\url{http://www.redditinvestigator.com/}}. Oppressive governments may 
 act on such data, tracking individuals. Such a threat can affect a user's willingness to share content 
 that is political or controversial. 
 
-An effective, fair and safe Web democracy should $(i)$ present content that is relevant to the user's 
-interests and $(ii)$ popular, be $(iii)$ resilience to biased reporting and $(iv)$ to user data 
-aggregation. Existing social news sites have provided an effective way to accomplish the first two 
-goals. However, their centralized nature raises concerns about content bias and users privacy. 
-cliq leverages the anonymity and autonomy that a decentralized systems provides to fulfill these 
-additional requirements.
+An effective, fair and safe Web democracy should $(i)$ present content
+that is relevant to the user's interests and $(ii)$ popular, be
+$(iii)$ resilience to biased reporting and $(iv)$ to user data
+aggregation. Existing social news sites have provided an effective way
+to accomplish the first two goals. However, their centralized nature
+raises concerns about content bias and users privacy.  cliq leverages
+the anonymity and autonomy that a decentralized systems provides to
+fulfill these additional requirements.
 \end{section}
 
 \section{Cliq Design}
@@ -73,7 +75,7 @@ additional requirements.
 A fundamental task of any social news site is to store, rank and find relevant content posted to the site. While this is straightforward in a centralized system, cliq must manage content spread across random, interim and potentially malicious nodes.
 We organize content through cliq similarly to what is common in most social news sites; each 
 post is associated with one or more category tags (e.g. politics, sports, or travel). 
-This content is stored in a distributed hash table (DHT), where keys are content tags (i.e. ``poiltics", ``Chicago"), and values are the set of posts related to that tag. A post in Cliq is defined by a url, title, tag(s), and metatdata to determine its popularity. For each tag, a subset of nodes with similar node IDs are collectively responsible for managing its content. These duties include storing, ranking and disseminating links uploaded by users with that tag, as well as monitoring for malicious nodes.
+This content is stored in a distributed hash table (DHT), where keys are content tags (i.e. ``poiltics'', ``Chicago''), and values are the set of posts related to that tag. A post in Cliq is defined by a url, title, tag(s), and metatdata to determine its popularity. For each tag, a subset of nodes with similar node IDs are collectively responsible for managing its content. These duties include storing, ranking and disseminating links uploaded by users with that tag, as well as monitoring for malicious nodes.
 
 \subsection{Cliq metatags}
 
@@ -83,8 +85,11 @@ These metatags can be extremely useful; for example, the most popular blackliste
 
 \section{Cliq Implementation}
 
-cliq is built using the Kadmelia The cliq interface is based upon the following primitives: get, vote, upload, and replicate. 
-These primitives enforce the goals above allowing cliq users to view content with the same ease of use of a centralized system with protections additional protections available through a decentralized system. 
+cliq is built on top of Kademlia. The cliq interface is based upon the
+following primitives: get, vote, upload, and replicate.  These
+primitives enforce the goals above allowing cliq users to view content
+with the same ease of use of a centralized system with protections
+additional protections available through a decentralized system.
 
 \subsection{Connecting to cliq}
 
@@ -96,9 +101,16 @@ These features of cliq are an extension of the Kademlia architecture.
 \subsection{Storing content in cliq}
 \label{subsec:upload}
 
-Each node in cliq has a Node ID which is a unique hash used to identify that particular node. Node IDs are dependent on the users' IP address and port number. This prevents a node's ability to manipulate its location in the network.   
-Content in cliq is stored by tag on nodes with Node ID closest to Tag ID specified by prefix matching where the Tag ID is simply a hash of that particular tag's name. 
-This scheme is used to both facilitate request routing as well as distribute load through the network. 
+Each node in cliq has a Node ID which is a unique hash used to
+identify that particular node. Node IDs are dependent on the users' IP
+address and port number. This prevents a node's ability to manipulate
+its location in the network.  Content in cliq is stored by tag on
+nodes with Node ID closest to Tag ID specified by prefix matching
+where the Tag ID is simply a hash of that particular tag's name. A
+node that is keeping content for a particular tag is called a ``Tag
+Head''. This scheme is used to both facilitate request routing as
+well as distribute load through the network.
+
 Content is initially stored in cliq with a call to the upload primitive, specifying the tag to be associated with the content, a title to show with the content, and the content url. 
 This information is then stored at the node with Node ID closest to the Tag ID by prefix. 
 If the tag already exists, the new item is merged in with the existing tag and its popularity is increased as specified in \ref{subsec:popularity}. 
@@ -122,10 +134,12 @@ The number of nodes storing each tag is explained in \ref{subsec:replication}.
 \label{subsec:popularity}
 
 Popularity is determined by three factors: uploads, up votes, and down votes. 
-The formula for determining popularity based on these factors was based on calculations of Reddit data and is explained in \ref{redditshit}.
+The formula for determining popularity based on these factors was
+based on calculations of Reddit data
+%  and is explained in \ref{redditshit}.
 An upload, as discussed in \ref{subsec:upload}, will either create a new post or will add to the value of an existing post's popularity. 
 The vote primitive requries a tag name, content url, and Node ID on which the vote is made. 
-Note that a tag name and content url identify a unique post, as this speicifies the criteria for whether or not a new post is created on an upload. 
+Note that a tag name and content url identify a unique post, as this specifies the criteria for whether or not a new post is created on an upload. 
 A voting node will necessarily know of a Node ID to vote on, as in order to find the post it must of have performed a get. 
 A high enough popularity for a post on a particular node will trigger a replication, specified in \ref{subsec:replication}. 
 
@@ -140,7 +154,7 @@ To prevent malicious nodes from replicating arbitrarily on other nodes in the ne
 After receiving a replication warning, a node waits to see votes from a fraction of nodes before accepting the replication request. 
 These votes must be redirected from the node wishing to replicate to the node that received the replication warning. 
 This verifies that the tag is indeed popular and deserves to be replicated further throughout the cliq network. 
-This fraction of the replication tolerance needed to be seen by the node being replicated on is specified by analysis of Reddit and is explained in \ref{subsec:redditshit}. 
+This fraction of the replication tolerance needed to be seen by the node being replicated on is specified by analysis of Reddit and is explained in \ref{subsec:inducereplication}. 
 The tag is replicated with each post restarting in popularity, with the assumption that popular posts will continue to be popular. 
 More discussion of these security measures is in \ref{sec:spam}. 
 
@@ -148,25 +162,28 @@ More discussion of these security measures is in \ref{sec:spam}.
 \label{sec:spam}
 Without registered users or the vantage point of a centralized system, we cannot use traditional methods of detecting spammers. For example, as in Reddit, we cannot ban known spammers because Cliq has no concept of users.  Instead, we take advantage of the fact that in the Kademlia P2P model, a node will be routed to a tag along the same nodes each time. Nodes along this path can collectively enforce good behavior from the users. Several features were added to cliq specifically to avoid a single user or small group of users from controlling the content available in the cliq network. Because the case when a majority of users collude to make items seen by the network is the intended use of Cliq, we look only at the cases of minorities without loss of generality. \cite{kademlia}
 
-\subsection{In the case of a single malicious node.}
+\subsection{Single Malicious Node}
 \label{subsec:spamsingle}
 
 Because there is no concept of user accounts in Cliq, an obvious attack vector is a single node that attempts to make a post popular by voting an arbitrary number of times. 
 Cliq prevents this by storing the IP address of each node that votes on a particular post and then preventing a node from that IP address from voting again. 
 While in general Cliq attempts to store as little data relating users to data, we belive user privacy is perserved for two reasons.
 First, any particular node only sees a subset of the votes on a particular post if that post has been replicated and in general can see a small subset of votes in the network. 
-And second, we believe protections for IP addresses such as Tor and Psuedonyms can be suitable in addition to using Cliq. 
+And second, we believe protections for IP addresses such as Tor and
+Psuedonyms can be suitable in addition to using Cliq \cite{tor, pseudonyms}. 
 As well, Cliq prevents lowering popularity arbitrarily through multiple views by keeping a similar list of IP addresses of nodes that receive posts in a get request. 
 Another simple attack vector in Cliq is respnding to a get request in Cliq with an arbitrary response. 
 While a completely distributed model cannot protect entirely against this type of attack, replication of data impedes the effectiveness of this type of attack. A user can choose from multiple nodes with the desired content. As users vote on content provided by a node, the votes are factored into a weighted model for choosing which node to ask for content. cliq also has the capability to blacklist IPs or node IDs so that they will not be asked for data. 
  
 Another attack vector, the simplest way to make content appear popular in the network is by attempting to replicate it arbitrarily. 
 Cliq protects against this by requiring during replication that the node attempting to replicate redirect a certain number of up votes to the nodes it wishes to replicate on. 
-This number is explained with the analysis of Reddit data in \ref{subsec:redditshit}. 
+
+% Angela?
+% This number is explained with the analysis of Reddit data in \ref{subsec:redditshit}. 
 
 %%Further, the distribution of which tags and and verification of node IDs ensures random %%distribution of tags a node is responsible for. in multiple node section?
 
-\subsection{In the case of a subset of malicious nodes (Sybil Attack).}
+\subsection{Multiple Malicious Nodes (Sybil Attack).}
 \label{subsec:spammulti}
 
 As with a single node, with no concept of users Cliq must determine popularity such that a small subset of users cannot have votes more impactful than a large number of users. 
@@ -190,7 +207,7 @@ Because popularity is determined exclusively by uploads, votes, views, and uploa
 \subsection{Study of reddit}
 \label{subsec:redditstudy}
 
-In order to inform the design and analysis of cliq, we perform an analysis of the popular social news site, reddit. We choose reddit because of its popularity (ranked 61 globally on Alexa) and very active user base. Reddit is organized into user-created, topic-based ``subreddit" communities. Subreddits serve a similar function that tags do in cliq. We collect data from over 300,000 most popular subreddits.
+In order to inform the design and analysis of cliq, we perform an analysis of the popular social news site, reddit. We choose reddit because of its popularity (ranked 61 globally on Alexa) and very active user base. Reddit is organized into user-created, topic-based ``subreddit'' communities. Subreddits serve a similar function that tags do in cliq. We collect data from over 300,000 most popular subreddits.
 
 We look at the distribution of the sizes of the most popular subreddits. We find that only 212 have over 100,000 subscribers. 12 subreddits have over 1,000,000. We therefore expect to perform dynamic load balancing in cliq 
 to account for a large variance in tag activity
@@ -204,7 +221,7 @@ In cliq, nodes do not have the vantage point to determine their tag's popularity
 In our reddit study, we look at average number of views per hour for over 300 subreddits. We isolate the subreddits that have over 1 million subscribers to determine the upper bound of activity for a tag. We find that these subreddits average 600,000 views per hour. 
 
 The beehive-based model uses a linear replication strategy. Given some
-branching factor $d$ and replication constant $K$, a tag head has $d$
+branching factor $d$ and replication threshold $K$, a tag head has $d$
 other nodes become tag heads every $K$ queries. Then the expected
 number of tag heads $T$ for content given $n$ requests is
 \[ 
@@ -212,7 +229,7 @@ T = (d/K)n + 1
 \]
 Then in order to achieve approximately $100$ requests per tag per
 minute per tag head for content receiving $600,000$ views per hour, at
-a branching factor $d = 2$, we need a replication constant of $K =
+a branching factor $d = 2$, we need a replication threshold of $K =
 200$, giving $(2/200)(100,000) + 1 = 101$ queries per minute per tag
 head \cite{ramasubramanian2004beehive}.
 
