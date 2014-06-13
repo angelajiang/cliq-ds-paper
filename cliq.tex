@@ -5,7 +5,7 @@
 
 \conferenceinfo{DSCE}{'14 Evanston, Illinois USA}
 
-\title{cliq DSCE}
+\title{Cliq DSCE}
 % \subtitle{EECS 395/495: Distributed Systems in Challenging Environments}
 
 \numberofauthors{3}
@@ -203,8 +203,18 @@ In cliq, nodes do not have the vantage point to determine their tag's popularity
 
 In our reddit study, we look at average number of views per hour for over 300 subreddits. We isolate the subreddits that have over 1 million subscribers to determine the upper bound of activity for a tag. We find that these subreddits average 600,000 views per hour. 
 
-TODO the math stuff
-
+The beehive-based model uses a linear replication strategy. Given some
+branching factor $d$ and replication constant $K$, a tag head has $d$
+other nodes become tag heads every $K$ queries. Then the expected
+number of tag heads $T$ for content given $n$ requests is
+\[ 
+T = (d/K)n + 1
+\]
+Then in order to achieve approximately $100$ requests per tag per
+minute per tag head for content receiving $600,000$ views per hour, at
+a branching factor $d = 2$, we need a replication constant of $K =
+200$, giving $(2/200)(100,000) + 1 = 101$ queries per minute per tag
+head.
 
 \end{section}
 
