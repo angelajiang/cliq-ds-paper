@@ -5,7 +5,7 @@
 
 \conferenceinfo{DSCE}{'14 Evanston, Illinois USA}
 
-\title{Cliq: Something Something}
+\title{cliq DSCE}
 % \subtitle{EECS 395/495: Distributed Systems in Challenging Environments}
 
 \numberofauthors{3}
@@ -185,6 +185,8 @@ We do not believe that resetting the popularity upon replication negatively impa
 If the node was popular on the original node, it should continue to be popular on the node it was replicated on since preferences in the Cliq network are assumed to be uniformly distributed through random selection of Node IDs. 
 Because popularity is determined exclusively by uploads, votes, views, and upload time, we believe these protections are sufficient. 
 
+\begin{section}{Analysis}
+
 \subsection{Study of reddit}
 \label{subsec:redditstudy}
 
@@ -192,8 +194,6 @@ In order to inform the design and analysis of cliq, we perform an analysis of th
 
 We look at the distribution of the sizes of the most popular subreddits. We find that only 212 have over 100,000 subscribers. 12 subreddits have over 1,000,000. We therefore expect to perform dynamic load balancing in cliq 
 to account for a large variance in tag activity
-
-\begin{section}{Analysis}
 
 \subsection{Inducing replication}
 \label{subsec:inducereplication} 
