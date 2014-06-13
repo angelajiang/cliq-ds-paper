@@ -83,16 +83,7 @@ These metatags can be extremely useful; for example, the most popular blackliste
 
 \section{Cliq Implementation}
 
-The Cliq implementation enforces the following design goals: 
-
-\begin{itemize}
-\item Show content that is relevent to user interests
-\item Show content that is popular
-\item Prevent spamming (such that it would violate either i or ii)
-\item Enforce basic protections of user anonymity
-\end{itemize}
-
-The cliq interface is based upon the following primitives: get, vote, upload, and replicate. 
+cliq is built using the Kadmelia The cliq interface is based upon the following primitives: get, vote, upload, and replicate. 
 These primitives enforce the goals above allowing cliq users to view content with the same ease of use of a centralized system with protections additional protections available through a decentralized system. 
 
 \subsection{Connecting to cliq}
@@ -194,28 +185,31 @@ We do not believe that resetting the popularity upon replication negatively impa
 If the node was popular on the original node, it should continue to be popular on the node it was replicated on since preferences in the Cliq network are assumed to be uniformly distributed through random selection of Node IDs. 
 Because popularity is determined exclusively by uploads, votes, views, and upload time, we believe these protections are sufficient. 
 
-\begin{section}{Analysis}
-
-\subsection{Inducing replication}
-\label{subsec:inducereplication}
-
-
 \subsection{Study of reddit}
 \label{subsec:redditstudy}
 
-In order to inform the design and analysis of cliq, we perform an analysis of the popular social news site, reddit. We choose reddit because of its popularity (ranked 61 globally on Alexa) and very active user base. Reddit is organized into user-created, topic-based ``subreddit" communities. Subreddits serve a similar function that tags do in cliq. We collect data from over 300,000 most popular subreddits. We look at the distribution of the sizes of the most popular subreddits. We find that only 212 have over 100,000 subscribers. 12 subreddits have over 1,000,000. We therefore expect to perform dynamic load balancing in cliq 
-to account for a large variance in tag activity.
+In order to inform the design and analysis of cliq, we perform an analysis of the popular social news site, reddit. We choose reddit because of its popularity (ranked 61 globally on Alexa) and very active user base. Reddit is organized into user-created, topic-based ``subreddit" communities. Subreddits serve a similar function that tags do in cliq. We collect data from over 300,000 most popular subreddits.
 
-\subsection{Load balancing}
-\label{subsec:loadbalancing}
-TODO
+We look at the distribution of the sizes of the most popular subreddits. We find that only 212 have over 100,000 subscribers. 12 subreddits have over 1,000,000. We therefore expect to perform dynamic load balancing in cliq 
+to account for a large variance in tag activity
 
+\begin{section}{Analysis}
+
+\subsection{Inducing replication}
+\label{subsec:inducereplication} 
+The goal of replication in cliq is to distribute responsibility of a single tag to multiple nodes for security and load balancing. Tags that are more popular will invite more activity for the responsible node. Therefore, we want more nodes responsible for popular tags. In this section, we outline our approach for acheiving this result through replication.
+
+In cliq, nodes do not have the vantage point to determine their tag's popularity relative to others. A node can infer popularity of it's tag through it's rate of read requests it receives. When a node experiences an abundance of requests, replication should be induced. Given that nodes don't have relative information of other tags, we must set a static threshold to determine when to induce popularity. In this section we determine what this threshold should be given a reddit-like user base. 
+
+In our reddit study, we look at average number of views per hour for over 300 subreddits. We isolate the subreddits that have over 1 million subscribers to determine the upper bound of activity for a tag. We find that these subreddits average 600,000 views per hour. 
+
+TODO the math stuff
 
 
 \end{section}
 
 \begin{section}{Conclusion}
-  TODO
+  
 \end{section}
 
 \bibliographystyle{abbrv}
