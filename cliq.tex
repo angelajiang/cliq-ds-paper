@@ -146,7 +146,7 @@ More discussion of these security measures is in \ref{sec:spam}.
 
 \section{Spamming Prevention}
 \label{sec:spam}
-Without registered users or the vantage point of a centralized system, we cannot use traditional methods of detecting spammers. For example, as in Reddit, we cannot ban known spammers because Cliq has no concept of users.  Instead, we take advantage of the fact that in the Kademlia P2P model, a node will be routed to a tag along the same nodes each time. Nodes along this path can collectively enforce good behavior from the users. Several features were added to cliq specifically to avoid a single user or small group of users from controlling the content available in the cliq network. Because the case when a majority of users collude to make items seen by the network is the intended use of Cliq, we look only at the cases of minorities without loss of generality. 
+Without registered users or the vantage point of a centralized system, we cannot use traditional methods of detecting spammers. For example, as in Reddit, we cannot ban known spammers because Cliq has no concept of users.  Instead, we take advantage of the fact that in the Kademlia P2P model, a node will be routed to a tag along the same nodes each time. Nodes along this path can collectively enforce good behavior from the users. Several features were added to cliq specifically to avoid a single user or small group of users from controlling the content available in the cliq network. Because the case when a majority of users collude to make items seen by the network is the intended use of Cliq, we look only at the cases of minorities without loss of generality. \cite{kademlia}
 
 \subsection{In the case of a single malicious node.}
 \label{subsec:spamsingle}
@@ -214,7 +214,7 @@ Then in order to achieve approximately $100$ requests per tag per
 minute per tag head for content receiving $600,000$ views per hour, at
 a branching factor $d = 2$, we need a replication constant of $K =
 200$, giving $(2/200)(100,000) + 1 = 101$ queries per minute per tag
-head.
+head \cite{ramasubramanian2004beehive}.
 
 \end{section}
 
